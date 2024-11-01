@@ -230,9 +230,9 @@ sim_anaesthetic_uptake <- function(pinsp,
             dvdt1 = 0,
             dvdt2 = (partial_pressures["lung"] - partial_pressures["vrg"]) *
                 conductances["vrg"],
-            dvdt3 = (partial_pressures["vrg"] - partial_pressures["mus"]) *
+            dvdt3 = (partial_pressures["lung"] - partial_pressures["mus"]) *
                 conductances["mus"],
-            dvdt4 = (partial_pressures["mus"] - partial_pressures["fat"]) *
+            dvdt4 = (partial_pressures["lung"] - partial_pressures["fat"]) *
                 conductances["fat"]
         )
         dvdt["dvdt1"] <- dvdtpt - sum(dvdt)

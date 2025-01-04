@@ -187,7 +187,7 @@ cardiac_output <- function(total = 6.3,
 #' Volumes
 #'
 #' @references
-#' Table 4 in
+#' Table 3 in
 #' Cowles, A. L., Borgstedt, H. H., & Gillies, A. J. (1973).
 #' A simplified digital method for predicting anesthetic uptake and distribution.
 #' Computers in Biology and Medicine, 3(4), 385-395.

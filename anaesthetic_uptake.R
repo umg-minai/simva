@@ -193,7 +193,7 @@ cardiac_output <- function(total = 6.3,
 #' Computers in Biology and Medicine, 3(4), 385-395.
 #' \doi{10.1016/0010-4825(73)90004-8}
 tissue_volume <- c(
-    "lung_air" = 2.68, "lung_tissue" = 1.0,
+    lung_air = 2.68, lung_tissue = 1.0,
     vrg = 8.83, mus = 36.25, fat = 11.5
 )
 blood_volume <- c(lung = 1.4, vrg = 3.2, mus = 0.63, fat = 0.18)

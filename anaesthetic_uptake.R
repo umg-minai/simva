@@ -9,9 +9,9 @@
 #' @return `numeric`, correction factor for temperature/pressure condition
 #' @examples
 #' # BTPS (body temperature, pressure saturated (ignored))
-#' #stp_factor()
+#' stp_factor()
 #' # STPD (standard temperature, pressure, dry)
-#' #stp_factor(tissue_temperature = 273.2)
+#' stp_factor(tissue_temperature = 273.2)
 stp_factor <- function(std_temperature = 273.2, tissue_temperature = 310.2,
                        std_pressure = 1) {
     std_temperature / (std_pressure * tissue_temperature)

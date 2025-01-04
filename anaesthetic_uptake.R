@@ -221,7 +221,7 @@ sim_anaesthetic_uptake <- function(pinsp,
     partial_pressures <- c(lung = 0, vrg = 0, mus = 0, fat = 0)
     results <- matrix(
         NA_real_, nrow = n, ncol = length(partial_pressures) + 2,
-        dimnames = list(c(), c("time", names(partial_pressures), "pcv"))
+        dimnames = list(c(), c("time", names(partial_pressures), "cv"))
     )
 
     for (i in seq_len(n)) {

@@ -278,7 +278,7 @@ conductances <- c(
 capacitances <- c(
     lung = lung_capacitance(
         tissue_volume["lung_air"],
-        ## blood volume and tissue:gas == blood:gas in that gase part_coefs
+        ## blood volume and tissue:gas == blood:gas in that case
         tissue_volume["lung_tissue"], tissue_coefficient = part_coefs["lung"],
         ## blood volume and blood:gas part_coefs
         blood_volume["lung"], part_coefs["lung"]

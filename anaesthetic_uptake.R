@@ -258,18 +258,28 @@ part_coefs <- tissue_coefficients("diethyl-ether")
 conductances <- c(
     ## do we have to use the alveolar ventilation here? 4.0 l/min?
     ## and a gas:gas partition coefficient of 1.0?
-    lung = conductance(flow = 4.0, partition_coefficient = 1.0),
-    vrg = conductance(blood_flow["vrg"], part_coefs["vrg"]),
-    mus = conductance(blood_flow["mus"], part_coefs["mus"]),
-    fat = conductance(blood_flow["fat"], part_coefs["fat"])
+    ## from Cowles 1973:
+    ## In the case of blood perfusing a tissue, the conductance is equal to
+    ## the rate of blood flow multiplied by the blood:gas partition coefficient
+    ## and the factor, T0/P0Ti. In the case of the alveolar gas ventilating
+    ## the lungs, the conductance is the rate of alveolar ventilation
+    ## multiplied by the factor, T0/P0Ti.
+    ## The gas:gas partition coefficient is equal to 1.0, by definition.
+    lung = conductance(
+        flow = 4.0,                     # alveolar minute ventilation
+        partition_coefficient = 1.0     # gas:gas partition coefficient
+    ),
+    vrg = conductance(blood_flow["vrg"], part_coefs["lung"]),
+    mus = conductance(blood_flow["mus"], part_coefs["lung"]),
+    fat = conductance(blood_flow["fat"], part_coefs["lung"])
 )
 
 #' Capacitances
 capacitances <- c(
     lung = lung_capacitance(
         tissue_volume["lung_air"],
-        ## is gas:tissue 1 here?
-        tissue_volume["lung_tissue"], tissue_coefficient = 1,
+        ## blood volume and tissue:gas == blood:gas in that gase part_coefs
+        tissue_volume["lung_tissue"], tissue_coefficient = part_coefs["lung"],
         ## blood volume and blood:gas part_coefs
         blood_volume["lung"], part_coefs["lung"]
     ),

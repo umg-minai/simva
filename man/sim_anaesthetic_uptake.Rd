@@ -12,7 +12,11 @@ sim_anaesthetic_uptake(
   capacitances,
   use_humidification = FALSE,
   pambient = 101.325,
-  pwater = 6.26
+  pwater = 6.26,
+  use_concentration_effect = FALSE,
+  tp_factor = stp_factor(),
+  alveolar_minute_ventilation = conductances["lung"]/tp_factor,
+  partial_pressures = c(pinsp = pinsp, lung = 0, vrg = 0, mus = 0, fat = 0, cv = 0)
 )
 }
 \arguments{
@@ -32,6 +36,17 @@ sim_anaesthetic_uptake(
 \item{pambient}{\code{numeric(1)}, ambient pressure in kPa.}
 
 \item{pwater}{\code{numeric(1)}, water pressure in kPa.}
+
+\item{use_concentration_effect}{\code{logical(1)}, should concentration effect
+take into account (default: \code{FALSE}).}
+
+\item{tp_factor}{\code{numeric}, temperature/pressure factor.}
+
+\item{alveolar_minute_ventilation}{\code{numeric(1)}, alveolar minute ventilation
+in l/min.}
+
+\item{partial_pressures}{\code{logical(1)}, initial partial pressures
+settings to start with.}
 }
 \value{
 \code{matrix}, with partial pressures for each simulation step.

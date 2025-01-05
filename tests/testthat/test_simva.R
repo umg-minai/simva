@@ -1,4 +1,13 @@
 test_that("sim_anaesthetic_uptake works", {
+    expect_error(
+        sim_anaesthetic_uptake(partial_pressures = 1:3), "length"
+    )
+    expect_error(
+        sim_anaesthetic_uptake(
+            partial_pressures = 
+                c(pinsp = 12, lung = 1, vrg = 1, mus = 1, fat = 1, foo = 1)
+        ), "names"
+    )
 
     # Test case with diethyl ether as in Cowles 1973, Table 4
     blood_flow <- cardiac_output()
@@ -99,5 +108,16 @@ test_that("sim_anaesthetic_uptake works", {
           lung = 1.63, vrg = 1.39, mus = 0.26, fat = 0.08, cv = 1.16),
         tolerance = 5e-2
     )
-
+    # Concentration effect, row 5 in Table 4, Cowles 1973
+    expect_equal(
+        sim_anaesthetic_uptake(
+            pinsp = 12, delta_time = 0.1, total_time = 10,
+            conductances = conductances,
+            capacitances = capacitances,
+            use_concentration_effect = TRUE
+        )[100, ],
+        c(time = 10, pinsp = 12,
+          lung = 1.91, vrg = 1.64, mus = 0.31, fat = 0.08, cv = 1.36),
+        tolerance = 5e-2
+    )
 })

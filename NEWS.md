@@ -5,6 +5,7 @@
 ## Changes in 0.0.2
 
 - Add humidification.
+- Add concentration effect.
 
 ## Changes in 0.0.1
 

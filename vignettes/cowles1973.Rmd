@@ -167,15 +167,27 @@ hum <- sim_anaesthetic_uptake(
 )
 ```
 
+## Concentration effect
+
+```{r sim-con}
+con <- sim_anaesthetic_uptake(
+    pinsp = 12, delta_time = 0.1, total_time = 10,
+    conductances = conductances,
+    capacitances = capacitances,
+    use_concentration_effect = TRUE
+)
+```
+
 ## Summary
 
 ```{r sim-tbl, echo = FALSE, results = "asis"}
-tbl <- rbind(normal[100, ], dav[100, ], hco[100, ], hum[100, ])
+tbl <- rbind(normal[100, ], dav[100, ], hco[100, ], hum[100, ], con[100, ])
 rownames(tbl) <- c(
     "Normal",
-    "Increased Ventilation",
-    "Decreased Cardiac Output",
-    "Humidification"
+    "Increased ventilation",
+    "Decreased cardiac output",
+    "Humidification",
+    "Concentration effect"
 )
 knitr::kable(
     tbl,

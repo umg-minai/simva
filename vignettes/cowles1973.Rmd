@@ -178,16 +178,30 @@ con <- sim_anaesthetic_uptake(
 )
 ```
 
+## Pulmonary shunt
+
+```{r sim-psh}
+psh <- sim_anaesthetic_uptake(
+    pinsp = 12, delta_time = 0.1, total_time = 10,
+    conductances = conductances,
+    capacitances = capacitances,
+    shunt_frac = 0.1
+)
+```
+
 ## Summary
 
 ```{r sim-tbl, echo = FALSE, results = "asis"}
-tbl <- rbind(normal[100, ], dav[100, ], hco[100, ], hum[100, ], con[100, ])
+tbl <- rbind(
+    normal[100, ], dav[100, ], hco[100, ], hum[100, ], con[100, ], psh[100, ]
+)
 rownames(tbl) <- c(
     "Normal",
     "Increased ventilation",
     "Decreased cardiac output",
     "Humidification",
-    "Concentration effect"
+    "Concentration effect",
+    "Pulmonary shunt"
 )
 knitr::kable(
     tbl,

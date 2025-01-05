@@ -4,23 +4,33 @@
 \alias{partial_pressures}
 \title{Partial Pressures}
 \usage{
-partial_pressures(pinsp, lung = 0, vrg = 0, mus = 0, fat = 0, cv = 0)
+partial_pressures(
+  pinsp,
+  palv = 0,
+  part = 0,
+  pvrg = 0,
+  pmus = 0,
+  pfat = 0,
+  pcv = 0
+)
 }
 \arguments{
 \item{pinsp}{\code{double(1)}, inspired anaesthetic partial pressure in atm.}
 
-\item{lung}{\code{double(1)}, partial pressure in the lung.}
+\item{palv}{\code{double(1)}, alveolar pressure, partial pressure in the lung.}
 
-\item{vrg}{\code{double(1)}, partial pressure in the vessel rich group
+\item{part}{\code{double(1)}, arterial partial pressure.}
+
+\item{pvrg}{\code{double(1)}, partial pressure in the vessel rich group
 compartment.}
 
-\item{mus}{\code{double(1)}, partial pressure in the lean/muscular
+\item{pmus}{\code{double(1)}, partial pressure in the lean/muscular
 compartment.}
 
-\item{fat}{\code{double(1)}, partial pressure in the fat
+\item{pfat}{\code{double(1)}, partial pressure in the fat
 compartment.}
 
-\item{cv}{\code{double(1)}, partial pressure in the central venous
+\item{pcv}{\code{double(1)}, partial pressure in the central venous
 compartment.}
 }
 \value{

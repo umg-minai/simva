@@ -2,6 +2,7 @@
 
 ## Changes in development version
 
+- Add pulmonary shunt support.
 - Add `partial_pressures` helper function.
 - Rename `tissue_coefficients` to `partition_coefficients`.
 

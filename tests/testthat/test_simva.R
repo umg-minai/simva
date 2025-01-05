@@ -72,8 +72,8 @@ test_that("sim_anaesthetic_uptake works", {
             conductances = conductances,
             capacitances = capacitances
         )[100, ],
-        c(time = 10, pinsp = 12,
-          palv = 1.73, part = 0, pvrg = 1.48, pmus = 0.28, pfat = 0.08, pcv = 1.23),
+        c(time = 10, pinsp = 12, palv = 1.73, part = 1.73, 
+          pvrg = 1.48, pmus = 0.28, pfat = 0.08, pcv = 1.23),
         tolerance = 5e-2
     )
     # Doubled alveolar ventilation, row 2 in Table 4, Cowles 1973
@@ -83,7 +83,7 @@ test_that("sim_anaesthetic_uptake works", {
             conductances = conductances * c(2, 1, 1, 1),
             capacitances = capacitances
         )[100, ],
-        c(time = 10, pinsp = 12, palv = 3.11, part = 0, 
+        c(time = 10, pinsp = 12, palv = 3.11, part = 3.11, 
           pvrg = 2.69, pmus = 0.51, pfat = 0.14, pcv = 2.23),
         tolerance = 5e-2
     )
@@ -94,7 +94,7 @@ test_that("sim_anaesthetic_uptake works", {
             conductances = conductances * c(1, 0.5, 0.5, 0.5),
             capacitances = capacitances
         )[100, ],
-        c(time = 10, pinsp = 12, palv = 2.24, part = 0, 
+        c(time = 10, pinsp = 12, palv = 2.24, part = 2.24, 
           pvrg = 1.59, pmus = 0.20, pfat = 0.05, pcv = 1.30),
         tolerance = 5e-2
     )
@@ -106,7 +106,7 @@ test_that("sim_anaesthetic_uptake works", {
             capacitances = capacitances,
             use_humidification = TRUE
         )[100, ],
-        c(time = 10, pinsp = 12, palv = 1.63, part = 0, 
+        c(time = 10, pinsp = 12, palv = 1.63, part = 1.63, 
           pvrg = 1.39, pmus = 0.26, pfat = 0.08, pcv = 1.16),
         tolerance = 5e-2
     )
@@ -118,8 +118,20 @@ test_that("sim_anaesthetic_uptake works", {
             capacitances = capacitances,
             use_concentration_effect = TRUE
         )[100, ],
-        c(time = 10, pinsp = 12, palv = 1.91, part = 0, 
+        c(time = 10, pinsp = 12, palv = 1.91, part = 1.91, 
           pvrg = 1.64, pmus = 0.31, pfat = 0.08, pcv = 1.36),
+        tolerance = 5e-2
+    )
+    # Pulmonary shunt, row 7 in Table 4, Cowles 1973
+    expect_equal(
+        sim_anaesthetic_uptake(
+            pinsp = 12, delta_time = 0.1, total_time = 10,
+            conductances = conductances,
+            capacitances = capacitances,
+            shunt_frac = 0.1
+        )[100, ],
+        c(time = 10, pinsp = 12, palv = 1.78, part = 1.72, 
+          pvrg = 1.47, pmus = 0.28, pfat = 0.08, pcv = 1.22),
         tolerance = 5e-2
     )
 })

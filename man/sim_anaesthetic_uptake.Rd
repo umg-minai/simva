@@ -16,6 +16,7 @@ sim_anaesthetic_uptake(
   use_concentration_effect = FALSE,
   tp_factor = stp_factor(),
   alveolar_minute_ventilation = conductances["lung"]/tp_factor,
+  shunt_frac = 0,
   ppart = partial_pressures(pinsp = pinsp)
 )
 }
@@ -44,6 +45,8 @@ take into account (default: \code{FALSE}).}
 
 \item{alveolar_minute_ventilation}{\code{numeric(1)}, alveolar minute ventilation
 in l/min.}
+
+\item{shunt_frac}{\code{double(1)}, fraction of pulmonary shunt.}
 
 \item{ppart}{\code{double(6)}, initial partial pressures settings to start with.
 Useful to (re)start a simulation at a given anaesthetic state/time point.}

@@ -122,13 +122,16 @@ sim_anaesthetic_uptake <- function(pinsp,
             conductances["lung"] <-
                 alveolar_minute_ventilation * tp_factor + dvdtpt / 100
 
+        ppart["part"] <-
+            ppart["palv"] * (1 - shunt_frac) + ppart["pcv"] * shunt_frac
+
         dvdt <- c(
             dvdt1 = 0,
-            dvdt2 = (ppart["palv"] - ppart["pvrg"]) *
+            dvdt2 = (ppart["part"] - ppart["pvrg"]) *
                 conductances["vrg"],
-            dvdt3 = (ppart["palv"] - ppart["pmus"]) *
+            dvdt3 = (ppart["part"] - ppart["pmus"]) *
                 conductances["mus"],
-            dvdt4 = (ppart["palv"] - ppart["pfat"]) *
+            dvdt4 = (ppart["part"] - ppart["pfat"]) *
                 conductances["fat"]
         )
 
@@ -140,6 +143,7 @@ sim_anaesthetic_uptake <- function(pinsp,
             ppart[c("pvrg", "pmus", "pfat")] *
                 conductances[c("vrg", "mus", "fat")]
         ) / sum(conductances[c("vrg", "mus", "fat")])
+
         results[i, ] <- c(i * delta_time, ppart)
     }
     results

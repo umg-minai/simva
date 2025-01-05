@@ -3,22 +3,22 @@ test_that("sim_anaesthetic_uptake works", {
     # Test case with diethyl ether as in Cowles 1973, Table 4
     blood_flow <- cardiac_output()
     part_coefs <- tissue_coefficients("diethyl-ether")
-    
+
     tissue_volume <- c(
         lung_air = 2.68, lung_tissue = 1.0,
         vrg = 8.83, mus = 36.25, fat = 11.5 #, not_perfused = 7.02
     )
     blood_volume <- c(lung = 1.4, vrg = 3.2, mus = 0.63, fat = 0.18)
-    
+
     # Conductances
     conductances <- c(
         ## do we have to use the alveolar ventilation here? 4.0 l/min?
         ## and a gas:gas partition coefficient of 1.0?
         ## from Cowles 1973:
         ## In the case of blood perfusing a tissue, the conductance is equal to
-        ## the rate of blood flow multiplied by the blood:gas partition 
-        ## coefficient and the factor, T0/P0Ti. In the case of the alveolar gas 
-        ## ventilating the lungs, the conductance is the rate of alveolar 
+        ## the rate of blood flow multiplied by the blood:gas partition
+        ## coefficient and the factor, T0/P0Ti. In the case of the alveolar gas
+        ## ventilating the lungs, the conductance is the rate of alveolar
         ## ventilation multiplied by the factor, T0/P0Ti.
         ## The gas:gas partition coefficient is equal to 1.0, by definition.
         lung = conductance(
@@ -29,13 +29,13 @@ test_that("sim_anaesthetic_uptake works", {
         mus = conductance(blood_flow["mus"], part_coefs["lung"]),
         fat = conductance(blood_flow["fat"], part_coefs["lung"])
     )
-    
+
     # Capacitances
     capacitances <- c(
         lung = lung_capacitance(
             tissue_volume["lung_air"],
             ## blood volume and tissue:gas == blood:gas in that gase part_coefs
-            tissue_volume["lung_tissue"], 
+            tissue_volume["lung_tissue"],
             tissue_coefficient = part_coefs["lung"],
             ## blood volume and blood:gas part_coefs
             blood_volume["lung"], part_coefs["lung"]
@@ -53,15 +53,15 @@ test_that("sim_anaesthetic_uptake works", {
             blood_volume["fat"], part_coefs["lung"]
         )
     )
-    
+
     # Normal, row 1 in Table 4, Cowles 1973
     expect_equal(
         sim_anaesthetic_uptake(
             pinsp = 12, delta_time = 0.1, total_time = 10,
-            conductances = conductances, 
+            conductances = conductances,
             capacitances = capacitances
         )[100, ],
-        c(time = 10, 
+        c(time = 10,
           lung = 1.73, vrg = 1.48, mus = 0.28, fat = 0.08, cv = 1.23),
         tolerance = 5e-2
     )
@@ -72,7 +72,7 @@ test_that("sim_anaesthetic_uptake works", {
             conductances = conductances * c(2, 1, 1, 1),
             capacitances = capacitances
         )[100, ],
-        c(time = 10, 
+        c(time = 10,
           lung = 3.11, vrg = 2.69, mus = 0.51, fat = 0.14, cv = 2.23),
         tolerance = 5e-2
     )
@@ -83,7 +83,7 @@ test_that("sim_anaesthetic_uptake works", {
             conductances = conductances * c(1, 0.5, 0.5, 0.5),
             capacitances = capacitances
         )[100, ],
-        c(time = 10, 
+        c(time = 10,
           lung = 2.24, vrg = 1.59, mus = 0.20, fat = 0.05, cv = 1.30),
         tolerance = 5e-2
     )

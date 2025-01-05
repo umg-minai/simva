@@ -193,7 +193,7 @@ psh <- sim_anaesthetic_uptake(
 
 ```{r sim-met}
 met <- sim_anaesthetic_uptake(
-    pinsp = 12, delta_time = 0.01, total_time = 10,
+    pinsp = 12, delta_time = 0.1, total_time = 10,
     conductances = conductances,
     capacitances = capacitances,
     metabolism_frac = 0.05

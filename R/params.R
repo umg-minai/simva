@@ -70,3 +70,29 @@ cardiac_output <- function(total = 6.3,
         vrg = prop_vrg * total, mus = prop_mus * total, fat = prop_fat * total
     )
 }
+
+#' Partial Pressures
+#'
+#' Create initial vector of partial pressures for
+#' [`simva::sim_anaesthetic_uptake()`].
+#'
+#' @param pinsp `double(1)`, inspired anaesthetic partial pressure in atm.
+#' @param lung `double(1)`, partial pressure in the lung.
+#' @param vrg `double(1)`, partial pressure in the vessel rich group
+#' compartment.
+#' @param mus `double(1)`, partial pressure in the lean/muscular
+#' compartment.
+#' @param fat `double(1)`, partial pressure in the fat
+#' compartment.
+#' @param cv `double(1)`, partial pressure in the central venous
+#' compartment.
+#' @return a named `numeric` with partial pressures suiteable as input for the
+#' [`simva::sim_anaesthetic_uptake()`] function.
+#' @export
+#'
+#' @examples
+#' partial_pressures(pinsp = 12)
+partial_pressures <- function(pinsp,
+                              lung = 0, vrg = 0, mus = 0, fat = 0, cv = 0) {
+    c(pinsp = pinsp, lung = lung, vrg = vrg, mus = mus, fat = fat, cv = cv)
+}

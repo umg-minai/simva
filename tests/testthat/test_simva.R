@@ -1,10 +1,10 @@
 test_that("sim_anaesthetic_uptake works", {
     expect_error(
-        sim_anaesthetic_uptake(partial_pressures = 1:3), "length"
+        sim_anaesthetic_uptake(ppart = 1:3), "length"
     )
     expect_error(
         sim_anaesthetic_uptake(
-            partial_pressures = 
+            ppart = 
                 c(pinsp = 12, lung = 1, vrg = 1, mus = 1, fat = 1, foo = 1)
         ), "names"
     )

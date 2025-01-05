@@ -16,7 +16,7 @@ sim_anaesthetic_uptake(
   use_concentration_effect = FALSE,
   tp_factor = stp_factor(),
   alveolar_minute_ventilation = conductances["lung"]/tp_factor,
-  partial_pressures = c(pinsp = pinsp, lung = 0, vrg = 0, mus = 0, fat = 0, cv = 0)
+  ppart = partial_pressures(pinsp = pinsp)
 )
 }
 \arguments{
@@ -45,8 +45,8 @@ take into account (default: \code{FALSE}).}
 \item{alveolar_minute_ventilation}{\code{numeric(1)}, alveolar minute ventilation
 in l/min.}
 
-\item{partial_pressures}{\code{logical(1)}, initial partial pressures
-settings to start with.}
+\item{ppart}{\code{double(6)}, initial partial pressures settings to start with.
+Useful to (re)start a simulation at a given anaesthetic state/time point.}
 }
 \value{
 \code{matrix}, with partial pressures for each simulation step.
@@ -58,7 +58,6 @@ Simulate anaesthetic uptake
 ## Test case with diethyl ether as in Cowles 1973, Table 4
 blood_flow <- cardiac_output(total = 6.3)
 part_coefs <- partition_coefficients("diethyl-ether")
-
 
 # Volumes as in Cowles, Table 3
 tissue_volume <- c(

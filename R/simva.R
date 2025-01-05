@@ -14,8 +14,8 @@
 #' @param tp_factor `numeric`, temperature/pressure factor.
 #' @param alveolar_minute_ventilation `numeric(1)`, alveolar minute ventilation
 #' in l/min.
-#' @param partial_pressures `logical(1)`, initial partial pressures
-#' settings to start with.
+#' @param ppart `double(6)`, initial partial pressures settings to start with.
+#' Useful to (re)start a simulation at a given anaesthetic state/time point.
 #' @return `matrix`, with partial pressures for each simulation step.
 #' @export
 #'
@@ -30,7 +30,6 @@
 #' ## Test case with diethyl ether as in Cowles 1973, Table 4
 #' blood_flow <- cardiac_output(total = 6.3)
 #' part_coefs <- partition_coefficients("diethyl-ether")
-#'
 #'
 #' # Volumes as in Cowles, Table 3
 #' tissue_volume <- c(
@@ -86,9 +85,8 @@ sim_anaesthetic_uptake <- function(pinsp,
                                    tp_factor = stp_factor(),
                                    alveolar_minute_ventilation =
                                        conductances["lung"] / tp_factor,
-                                   partial_pressures =
-                                       c(pinsp = pinsp, lung = 0, vrg = 0,
-                                         mus = 0, fat = 0, cv = 0)
+                                   ppart =
+                                       partial_pressures(pinsp = pinsp)
                                    ) {
     nms <- c("pinsp", "lung", "vrg", "mus", "fat", "cv")
 
@@ -98,20 +96,20 @@ sim_anaesthetic_uptake <- function(pinsp,
         NA_real_, nrow = n, ncol = 7L, dimnames = list(c(), c("time", nms))
     )
 
-    if (length(partial_pressures) != length(nms) ||
-            any(names(partial_pressures) != nms))
+    if (length(ppart) != length(nms) ||
+            any(names(ppart) != nms))
         stop(
-            "'partial_pressures' has to be of length ", length(nms),
+            "'ppart' has to be of length ", length(nms),
             " and has to have the following names: ",
             paste0(nms, collapse = ", ")
         )
 
     if (isTRUE(use_humidification))
-        partial_pressures["pinsp"] <-
-            partial_pressures["pinsp"] * (pambient / (pambient + pwater))
+        ppart["pinsp"] <-
+            ppart["pinsp"] * (pambient / (pambient + pwater))
 
     for (i in seq_len(n)) {
-        dvdtpt <- (partial_pressures["pinsp"] - partial_pressures["lung"]) *
+        dvdtpt <- (ppart["pinsp"] - ppart["lung"]) *
             conductances["lung"]
 
         if (isTRUE(use_concentration_effect))
@@ -120,23 +118,23 @@ sim_anaesthetic_uptake <- function(pinsp,
 
         dvdt <- c(
             dvdt1 = 0,
-            dvdt2 = (partial_pressures["lung"] - partial_pressures["vrg"]) *
+            dvdt2 = (ppart["lung"] - ppart["vrg"]) *
                 conductances["vrg"],
-            dvdt3 = (partial_pressures["lung"] - partial_pressures["mus"]) *
+            dvdt3 = (ppart["lung"] - ppart["mus"]) *
                 conductances["mus"],
-            dvdt4 = (partial_pressures["lung"] - partial_pressures["fat"]) *
+            dvdt4 = (ppart["lung"] - ppart["fat"]) *
                 conductances["fat"]
         )
 
         dvdt["dvdt1"] <- dvdtpt - sum(dvdt)
-        partial_pressures[c("lung", "vrg", "mus", "fat")] <-
-            partial_pressures[c("lung", "vrg", "mus", "fat")] +
+        ppart[c("lung", "vrg", "mus", "fat")] <-
+            ppart[c("lung", "vrg", "mus", "fat")] +
             dvdt * delta_time / capacitances
-        partial_pressures["cv"] <- sum(
-            partial_pressures[c("vrg", "mus", "fat")] *
+        ppart["cv"] <- sum(
+            ppart[c("vrg", "mus", "fat")] *
                 conductances[c("vrg", "mus", "fat")]
         ) / sum(conductances[c("vrg", "mus", "fat")])
-        results[i, ] <- c(i * delta_time, partial_pressures)
+        results[i, ] <- c(i * delta_time, ppart)
     }
     results
 }

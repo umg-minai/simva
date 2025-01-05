@@ -70,40 +70,76 @@ sim_anaesthetic_uptake <- function(pinsp,
                                    conductances, capacitances) {
     n <- ceiling(total_time / delta_time)
 
-    partial_pressures <- c(lung = 0, vrg = 0, mus = 0, fat = 0)
     results <- matrix(
-        NA_real_, nrow = n, ncol = length(partial_pressures) + 2,
-        dimnames = list(c(), c("time", names(partial_pressures), "cv"))
+        0.0, nrow = n, ncol = 7L,
+        dimnames = list(
+            c(),
+            c("time", "pinsp", "lung", "vrg", "mus", "fat", "cv")
+        )
     )
+    results[1L, "pinsp"] <- pinsp
 
     # humified
     # pamb <- 760 # mmHg
     # dph2o <- 47 # mmHg
     # pinsp <- pinsp * (pamb/ (pamb + dph2o))
 
-    for (i in seq_len(n)) {
-        dvdtpt <- (pinsp - partial_pressures["lung"]) * conductances["lung"]
-
-        # if concentration effect
-        # AMV = 4
-        # conductances["lung"] <- AMV * stp_factor() + dvdtpt / 100
-        dvdt <- c(
-            dvdt1 = 0,
-            dvdt2 = (partial_pressures["lung"] - partial_pressures["vrg"]) *
-                conductances["vrg"],
-            dvdt3 = (partial_pressures["lung"] - partial_pressures["mus"]) *
-                conductances["mus"],
-            dvdt4 = (partial_pressures["lung"] - partial_pressures["fat"]) *
-                conductances["fat"]
+    results[1L, ] <- c(
+        delta_time,
+        .sim_step(
+            results[1L, -1],
+            conductances = conductances,
+            capacitances = capacitances,
+            delta_time = delta_time
         )
-        dvdt["dvdt1"] <- dvdtpt - sum(dvdt)
-        partial_pressures <-
-            partial_pressures + dvdt * delta_time / capacitances
-        pcv <- sum(
-            partial_pressures[c("vrg", "mus", "fat")] *
-                conductances[c("vrg", "mus", "fat")]
-        ) / sum(conductances[c("vrg", "mus", "fat")])
-        results[i,] <- c(i * delta_time, partial_pressures, pcv)
+    )
+
+    for (i in seq(from = 2L, to = n, by = 1L)) {
+        results[i, ] <- c(
+            i * delta_time,
+            .sim_step(
+                results[i - 1L, -1],
+                conductances = conductances,
+                capacitances = capacitances,
+                delta_time = delta_time
+            )
+        )
     }
     results
+}
+
+#' Single simulation step
+#'
+#' @param partial_pressures `double(7)`, columns: pinsp, palv, part, pvrg,
+#' pmus, pfat, pcv.
+#'
+#' @noRd
+.sim_step <- function(partial_pressures,
+                      conductances, capacitances, delta_time) {
+    dvdtpt <- (partial_pressures["pinsp"] - partial_pressures["lung"]) *
+        conductances["lung"]
+
+    # if concentration effect
+    # AMV = 4
+    # conductances["lung"] <- AMV * stp_factor() + dvdtpt / 100
+
+    dvdt <- c(
+        dvdt1 = 0,
+        dvdt2 = (partial_pressures["lung"] - partial_pressures["vrg"]) *
+            conductances["vrg"],
+        dvdt3 = (partial_pressures["lung"] - partial_pressures["mus"]) *
+            conductances["mus"],
+        dvdt4 = (partial_pressures["lung"] - partial_pressures["fat"]) *
+            conductances["fat"]
+    )
+
+    dvdt["dvdt1"] <- dvdtpt - sum(dvdt)
+    partial_pressures[c("lung", "vrg", "mus", "fat")] <-
+        partial_pressures[c("lung", "vrg", "mus", "fat")] +
+        dvdt * delta_time / capacitances
+    partial_pressures["cv"] <- sum(
+        partial_pressures[c("vrg", "mus", "fat")] *
+            conductances[c("vrg", "mus", "fat")]
+    ) / sum(conductances[c("vrg", "mus", "fat")])
+    partial_pressures
 }

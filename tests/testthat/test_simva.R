@@ -61,7 +61,7 @@ test_that("sim_anaesthetic_uptake works", {
             conductances = conductances,
             capacitances = capacitances
         )[100, ],
-        c(time = 10,
+        c(time = 10, pinsp = 12,
           lung = 1.73, vrg = 1.48, mus = 0.28, fat = 0.08, cv = 1.23),
         tolerance = 5e-2
     )
@@ -72,7 +72,7 @@ test_that("sim_anaesthetic_uptake works", {
             conductances = conductances * c(2, 1, 1, 1),
             capacitances = capacitances
         )[100, ],
-        c(time = 10,
+        c(time = 10, pinsp = 12,
           lung = 3.11, vrg = 2.69, mus = 0.51, fat = 0.14, cv = 2.23),
         tolerance = 5e-2
     )
@@ -83,7 +83,7 @@ test_that("sim_anaesthetic_uptake works", {
             conductances = conductances * c(1, 0.5, 0.5, 0.5),
             capacitances = capacitances
         )[100, ],
-        c(time = 10,
+        c(time = 10, pinsp = 12,
           lung = 2.24, vrg = 1.59, mus = 0.20, fat = 0.05, cv = 1.30),
         tolerance = 5e-2
     )

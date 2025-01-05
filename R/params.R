@@ -3,7 +3,7 @@
 #' Partition coefficients for commonly used volatile anaesthetics.
 #'
 #' @param anaesthetic `character(1)`, anaesthetic
-#' @return a named `numeric` with tissue partition coefficients for
+#' @return a named `numeric` with partition coefficients for
 #' *lung*, *vrg* (vessel rich group, visceral: brain, heart, kidney, ...),
 #' *mus* (muscle, lean tissue: muscle, skin, subcutaneous tissue, ...),
 #' and *fat* (fat, fatty tissue: yellow marrow, fat) for the given anaesthetic.
@@ -17,11 +17,11 @@
 #' \doi{10.1016/0010-4825(73)90004-8}
 #'
 #' @examples
-#' tissue_coefficients("nitrous-oxide")
-tissue_coefficients <- function(anaesthetic = c(
-                                    "nitrous-oxide",
-                                    "diethyl-ether"
-                                )) {
+#' partition_coefficients("nitrous-oxide")
+partition_coefficients <- function(anaesthetic = c(
+                                        "nitrous-oxide",
+                                        "diethyl-ether",
+                                        "halothane")) {
     switch(
         match.arg(anaesthetic),
         "nitrous-oxide" = c(lung = 0.463, vrg = 0.463, mus = 0.463, fat = 1.03),

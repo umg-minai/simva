@@ -57,7 +57,7 @@ Simulate anaesthetic uptake
 \examples{
 ## Test case with diethyl ether as in Cowles 1973, Table 4
 blood_flow <- cardiac_output(total = 6.3)
-part_coefs <- tissue_coefficients("diethyl-ether")
+part_coefs <- partition_coefficients("diethyl-ether")
 
 
 # Volumes as in Cowles, Table 3

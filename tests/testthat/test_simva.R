@@ -11,7 +11,7 @@ test_that("sim_anaesthetic_uptake works", {
 
     # Test case with diethyl ether as in Cowles 1973, Table 4
     blood_flow <- cardiac_output()
-    part_coefs <- tissue_coefficients("diethyl-ether")
+    part_coefs <- partition_coefficients("diethyl-ether")
 
     tissue_volume <- c(
         lung_air = 2.68, lung_tissue = 1.0,

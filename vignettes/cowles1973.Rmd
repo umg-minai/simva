@@ -32,7 +32,7 @@ First we have to define the *partition coefficients* for the given anaesthetic
 
 
 ```{r part-coefs}
-part_coefs <- tissue_coefficients("diethyl-ether")
+part_coefs <- partition_coefficients("diethyl-ether")
 ```
 
 ```{r part-coefs-tbl, echo = FALSE, results = "asis"}

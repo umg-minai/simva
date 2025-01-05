@@ -1,13 +1,17 @@
-test_that("tissue_coefficients works", {
-    expect_error(tissue_coefficients("foo"), "should be one of")
+test_that("partition_coefficients works", {
+    expect_error(partition_coefficients("foo"), "should be one of")
     # ensure return of equal values as shown in Cowles et al. 1973 Table 2
     expect_identical(
-        tissue_coefficients("nitrous-oxide"),
+        partition_coefficients("nitrous-oxide"),
         c(lung = 0.463, vrg = 0.463, mus = 0.463, fat = 1.03)
     )
     expect_identical(
-        tissue_coefficients("diethyl-ether"),
+        partition_coefficients("diethyl-ether"),
         c(lung = 12.1, vrg = 12.1, mus = 12.1, fat = 44.1)
+    )
+    expect_identical(
+        partition_coefficients("halothane"),
+        c(lung = 2.3, vrg = 6, mus = 8, fat = 138)
     )
 })
 

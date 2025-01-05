@@ -14,6 +14,7 @@
 #' @param tp_factor `numeric`, temperature/pressure factor.
 #' @param alveolar_minute_ventilation `numeric(1)`, alveolar minute ventilation
 #' in l/min.
+#' @param shunt_frac `double(1)`, fraction of pulmonary shunt.
 #' @param ppart `double(6)`, initial partial pressures settings to start with.
 #' Useful to (re)start a simulation at a given anaesthetic state/time point.
 #' @return `matrix`, with partial pressures for each simulation step.
@@ -85,15 +86,17 @@ sim_anaesthetic_uptake <- function(pinsp,
                                    tp_factor = stp_factor(),
                                    alveolar_minute_ventilation =
                                        conductances["lung"] / tp_factor,
+                                   shunt_frac = 0,
                                    ppart =
                                        partial_pressures(pinsp = pinsp)
                                    ) {
-    nms <- c("pinsp", "lung", "vrg", "mus", "fat", "cv")
+    nms <- names(partial_pressures(0))
 
     n <- ceiling(total_time / delta_time)
 
     results <- matrix(
-        NA_real_, nrow = n, ncol = 7L, dimnames = list(c(), c("time", nms))
+        NA_real_, nrow = n, ncol = length(nms) + 1L,
+        dimnames = list(c(), c("time", nms))
     )
 
     if (length(ppart) != length(nms) ||
@@ -108,8 +111,11 @@ sim_anaesthetic_uptake <- function(pinsp,
         ppart["pinsp"] <-
             ppart["pinsp"] * (pambient / (pambient + pwater))
 
+    if (shunt_frac < 0 || shunt_frac > 1)
+        stop("'shunt_frac' has to be between 0 and 1.")
+
     for (i in seq_len(n)) {
-        dvdtpt <- (ppart["pinsp"] - ppart["lung"]) *
+        dvdtpt <- (ppart["pinsp"] - ppart["palv"]) *
             conductances["lung"]
 
         if (isTRUE(use_concentration_effect))
@@ -118,20 +124,20 @@ sim_anaesthetic_uptake <- function(pinsp,
 
         dvdt <- c(
             dvdt1 = 0,
-            dvdt2 = (ppart["lung"] - ppart["vrg"]) *
+            dvdt2 = (ppart["palv"] - ppart["pvrg"]) *
                 conductances["vrg"],
-            dvdt3 = (ppart["lung"] - ppart["mus"]) *
+            dvdt3 = (ppart["palv"] - ppart["pmus"]) *
                 conductances["mus"],
-            dvdt4 = (ppart["lung"] - ppart["fat"]) *
+            dvdt4 = (ppart["palv"] - ppart["pfat"]) *
                 conductances["fat"]
         )
 
         dvdt["dvdt1"] <- dvdtpt - sum(dvdt)
-        ppart[c("lung", "vrg", "mus", "fat")] <-
-            ppart[c("lung", "vrg", "mus", "fat")] +
+        ppart[c("palv", "pvrg", "pmus", "pfat")] <-
+            ppart[c("palv", "pvrg", "pmus", "pfat")] +
             dvdt * delta_time / capacitances
-        ppart["cv"] <- sum(
-            ppart[c("vrg", "mus", "fat")] *
+        ppart["pcv"] <- sum(
+            ppart[c("pvrg", "pmus", "pfat")] *
                 conductances[c("vrg", "mus", "fat")]
         ) / sum(conductances[c("vrg", "mus", "fat")])
         results[i, ] <- c(i * delta_time, ppart)

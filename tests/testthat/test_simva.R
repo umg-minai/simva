@@ -8,6 +8,8 @@ test_that("sim_anaesthetic_uptake works", {
                 c(pinsp = 12, lung = 1, vrg = 1, mus = 1, fat = 1, foo = 1)
         ), "names"
     )
+    expect_error(sim_anaesthetic_uptake(pinsp = 12, shunt_frac = 3), "0 and 1")
+    expect_error(sim_anaesthetic_uptake(pinsp = 12, shunt_frac = -3), "0 and 1")
 
     # Test case with diethyl ether as in Cowles 1973, Table 4
     blood_flow <- cardiac_output()
@@ -71,7 +73,7 @@ test_that("sim_anaesthetic_uptake works", {
             capacitances = capacitances
         )[100, ],
         c(time = 10, pinsp = 12,
-          lung = 1.73, vrg = 1.48, mus = 0.28, fat = 0.08, cv = 1.23),
+          palv = 1.73, part = 0, pvrg = 1.48, pmus = 0.28, pfat = 0.08, pcv = 1.23),
         tolerance = 5e-2
     )
     # Doubled alveolar ventilation, row 2 in Table 4, Cowles 1973
@@ -81,8 +83,8 @@ test_that("sim_anaesthetic_uptake works", {
             conductances = conductances * c(2, 1, 1, 1),
             capacitances = capacitances
         )[100, ],
-        c(time = 10, pinsp = 12,
-          lung = 3.11, vrg = 2.69, mus = 0.51, fat = 0.14, cv = 2.23),
+        c(time = 10, pinsp = 12, palv = 3.11, part = 0, 
+          pvrg = 2.69, pmus = 0.51, pfat = 0.14, pcv = 2.23),
         tolerance = 5e-2
     )
     # Halved cardiac output, row 3 in Table 4, Cowles 1973
@@ -92,8 +94,8 @@ test_that("sim_anaesthetic_uptake works", {
             conductances = conductances * c(1, 0.5, 0.5, 0.5),
             capacitances = capacitances
         )[100, ],
-        c(time = 10, pinsp = 12,
-          lung = 2.24, vrg = 1.59, mus = 0.20, fat = 0.05, cv = 1.30),
+        c(time = 10, pinsp = 12, palv = 2.24, part = 0, 
+          pvrg = 1.59, pmus = 0.20, pfat = 0.05, pcv = 1.30),
         tolerance = 5e-2
     )
     # Humified, row 4 in Table 4, Cowles 1973
@@ -104,8 +106,8 @@ test_that("sim_anaesthetic_uptake works", {
             capacitances = capacitances,
             use_humidification = TRUE
         )[100, ],
-        c(time = 10, pinsp = 12,
-          lung = 1.63, vrg = 1.39, mus = 0.26, fat = 0.08, cv = 1.16),
+        c(time = 10, pinsp = 12, palv = 1.63, part = 0, 
+          pvrg = 1.39, pmus = 0.26, pfat = 0.08, pcv = 1.16),
         tolerance = 5e-2
     )
     # Concentration effect, row 5 in Table 4, Cowles 1973
@@ -116,8 +118,8 @@ test_that("sim_anaesthetic_uptake works", {
             capacitances = capacitances,
             use_concentration_effect = TRUE
         )[100, ],
-        c(time = 10, pinsp = 12,
-          lung = 1.91, vrg = 1.64, mus = 0.31, fat = 0.08, cv = 1.36),
+        c(time = 10, pinsp = 12, palv = 1.91, part = 0, 
+          pvrg = 1.64, pmus = 0.31, pfat = 0.08, pcv = 1.36),
         tolerance = 5e-2
     )
 })

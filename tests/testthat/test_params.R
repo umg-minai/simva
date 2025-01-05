@@ -37,6 +37,6 @@ test_that("partial_pressures works", {
     expect_error(partial_pressures(), "pinsp")
     expect_identical(
         partial_pressures(pinsp = 12),
-        c(pinsp = 12, lung = 0, vrg = 0, mus = 0, fat = 0, cv = 0)
+        c(pinsp = 12, palv = 0, part = 0, pvrg = 0, pmus = 0, pfat = 0, pcv = 0)
     )
 })

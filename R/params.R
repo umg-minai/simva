@@ -77,14 +77,15 @@ cardiac_output <- function(total = 6.3,
 #' [`simva::sim_anaesthetic_uptake()`].
 #'
 #' @param pinsp `double(1)`, inspired anaesthetic partial pressure in atm.
-#' @param lung `double(1)`, partial pressure in the lung.
-#' @param vrg `double(1)`, partial pressure in the vessel rich group
+#' @param palv `double(1)`, alveolar pressure, partial pressure in the lung.
+#' @param part `double(1)`, arterial partial pressure.
+#' @param pvrg `double(1)`, partial pressure in the vessel rich group
 #' compartment.
-#' @param mus `double(1)`, partial pressure in the lean/muscular
+#' @param pmus `double(1)`, partial pressure in the lean/muscular
 #' compartment.
-#' @param fat `double(1)`, partial pressure in the fat
+#' @param pfat `double(1)`, partial pressure in the fat
 #' compartment.
-#' @param cv `double(1)`, partial pressure in the central venous
+#' @param pcv `double(1)`, partial pressure in the central venous
 #' compartment.
 #' @return a named `numeric` with partial pressures suiteable as input for the
 #' [`simva::sim_anaesthetic_uptake()`] function.
@@ -93,6 +94,8 @@ cardiac_output <- function(total = 6.3,
 #' @examples
 #' partial_pressures(pinsp = 12)
 partial_pressures <- function(pinsp,
-                              lung = 0, vrg = 0, mus = 0, fat = 0, cv = 0) {
-    c(pinsp = pinsp, lung = lung, vrg = vrg, mus = mus, fat = fat, cv = cv)
+                              palv = 0, part = 0,
+                              pvrg = 0, pmus = 0, pfat = 0, pcv = 0) {
+    c(pinsp = pinsp, palv = palv, part = part, pvrg = pvrg, pmus = pmus,
+      pfat = pfat, pcv = pcv)
 }

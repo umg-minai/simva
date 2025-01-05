@@ -1,0 +1,178 @@
+---
+title: Simulate Volatile Anaesthestic Uptake as in Cowles et al. 1973
+output:
+    rmarkdown::html_vignette:
+        toc_float: true
+vignette: >
+    %\VignetteIndexEntry{Simulate Volatile Anaesthestic Uptake as in Cowles et al. 1973}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
+    %\VignettePackage{simva}
+bibliography: references.bib
+---
+
+```{r setup, include = FALSE}
+Sys.setenv(LANGUAGE = "en")
+library("simva")
+```
+
+# Introduction
+
+The `simva` package is an `R` implementation of the algorithm for a three
+compartment model to simulate volatile anaesthetic uptake proposed in
+@Cowles1973.
+
+Here we reproduce the calulations presented in their article
+for *diethyl ether*.
+
+# Definition of the compartments
+
+First we have to define the *partition coefficients* for the given anaesthetic
+(*diethyl ether*) for all compartments.
+
+
+```{r part-coefs}
+part_coefs <- tissue_coefficients("diethyl-ether")
+```
+
+```{r part-coefs-tbl, echo = FALSE, results = "asis"}
+knitr::kable(t(part_coefs))
+```
+
+We have to define the caridac output and the proportion of cardiac output each
+compartment recieves.
+
+```{r co}
+blood_flow <- cardiac_output(total = 6.3)
+```
+
+```{r co-tbl, echo = FALSE, results = "asis"}
+knitr::kable(t(blood_flow))
+```
+
+Each compartment has a tissue and a blood volume.
+
+```{r volumes}
+tissue_volume <- c(
+    lung_air = 2.68, lung_tissue = 1.0,
+    vrg = 8.83, mus = 36.25, fat = 11.5 #, not_perfused = 7.02
+)
+blood_volume <- c(lung = 1.4, vrg = 3.2, mus = 0.63, fat = 0.18)
+```
+
+# Conductances and capacitances
+
+The uptake of the volatile anaesthetic for a given compartment depends on the
+properties of the anaesthetic, the air/blood flow and the volume of the
+compartment.
+
+```{r conductances}
+conductances <- c(
+    lung = conductance(
+        flow = 4.0,                     # alveolar minute ventilation
+        partition_coefficient = 1.0     # gas:gas partition coefficient
+    ),
+    vrg = conductance(blood_flow["vrg"], part_coefs["lung"]),
+    mus = conductance(blood_flow["mus"], part_coefs["lung"]),
+    fat = conductance(blood_flow["fat"], part_coefs["lung"])
+)
+```
+
+```{r capacitances}
+capacitances <- c(
+    lung = lung_capacitance(
+        tissue_volume["lung_air"],
+        ## blood volume and tissue:gas == blood:gas in that gase part_coefs
+        tissue_volume["lung_tissue"],
+        tissue_coefficient = part_coefs["lung"],
+        ## blood volume and blood:gas part_coefs
+        blood_volume["lung"], part_coefs["lung"]
+    ),
+    vrg = capacitance(
+        tissue_volume["vrg"], part_coefs["vrg"],
+        blood_volume["vrg"], part_coefs["lung"]
+    ),
+    mus = capacitance(
+        tissue_volume["mus"], part_coefs["mus"],
+        blood_volume["mus"], part_coefs["lung"]
+    ),
+    fat = capacitance(
+        tissue_volume["fat"], part_coefs["fat"],
+        blood_volume["fat"], part_coefs["lung"]
+    )
+)
+```
+
+# Simulations
+
+## Normal
+
+```{r sim-normal}
+normal <- sim_anaesthetic_uptake(
+    pinsp = 12, delta_time = 0.1, total_time = 10,
+    conductances = conductances, capacitances = capacitances
+)
+
+knitr::kable(head(normal))
+
+cols <- palette.colors(ncol(normal) - 1)
+matplot(
+    normal[, -1],
+    col = cols,
+    type = "l",
+    lty = 1,
+    ylab = "partial pressure [%]",
+    xlab = "time [min]",
+    xaxt = "n"
+)
+axis(1, 1:10 * 10, labels = 1:10)
+legend(
+    "topleft",
+    title = "compartments",
+    legend = colnames(normal)[-1],
+    lty = 1,
+    bty = "n",
+    col = cols
+)
+```
+
+## Doubled alveolar minute ventilation
+
+```{r sim-dav}
+dav <- sim_anaesthetic_uptake(
+    pinsp = 12, delta_time = 0.1, total_time = 10,
+    conductances = conductances * c(2, 1, 1, 1),
+    capacitances = capacitances
+)
+```
+
+## Halved cardiac output
+
+```{r sim-hco}
+hco <- sim_anaesthetic_uptake(
+    pinsp = 12, delta_time = 0.1, total_time = 10,
+    conductances = conductances * c(1, 0.5, 0.5, 0.5),
+    capacitances = capacitances
+)
+```
+
+## Summary
+
+```{r sim-tbl, echo = FALSE, results = "asis"}
+tbl <- rbind(normal[100, ], dav[100, ], hco[100, ])
+rownames(tbl) <- c(
+    "Normal",
+    "Increased Ventilation",
+    "Decreased Cardiac Output"
+)
+knitr::kable(
+    tbl,
+    digits = 2,
+    caption = paste0(
+        "Summary of different simulation experiments. ",
+        "Results are comparable to Table 4 in @Cowles1973."
+    )
+)
+```
+
+# References

@@ -5,6 +5,10 @@
 #' @param total_time `numeric(1)`, total time to simulate.
 #' @param conductances `numeric(4)`, conductances.
 #' @param capacitances `numeric(4)`, capacitances.
+#' @param use_humidification `logical(1)`, should humification take into account
+#' (default: `FALSE`).
+#' @param pambient `numeric(1)`, ambient pressure in kPa.
+#' @param pwater `numeric(1)`, water pressure in kPa.
 #' @return `matrix`, with partial pressures for each simulation step.
 #' @export
 #'
@@ -67,7 +71,11 @@
 #' matplot(sim[, 1], sim[, -1])
 sim_anaesthetic_uptake <- function(pinsp,
                                    delta_time = 0.1, total_time = 10,
-                                   conductances, capacitances) {
+                                   conductances, capacitances,
+                                   use_humidification = FALSE,
+                                   pambient = 101.325,
+                                   pwater = 6.26
+                                   ) {
     n <- ceiling(total_time / delta_time)
 
     results <- matrix(
@@ -77,12 +85,11 @@ sim_anaesthetic_uptake <- function(pinsp,
             c("time", "pinsp", "lung", "vrg", "mus", "fat", "cv")
         )
     )
-    results[1L, "pinsp"] <- pinsp
 
-    # humified
-    # pamb <- 760 # mmHg
-    # dph2o <- 47 # mmHg
-    # pinsp <- pinsp * (pamb/ (pamb + dph2o))
+    if (isTRUE(use_humidification))
+        results[1L, "pinsp"] <- pinsp * (pambient / (pambient + pwater))
+    else
+        results[1L, "pinsp"] <- pinsp
 
     results[1L, ] <- c(
         delta_time,

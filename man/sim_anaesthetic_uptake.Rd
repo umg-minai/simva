@@ -9,7 +9,10 @@ sim_anaesthetic_uptake(
   delta_time = 0.1,
   total_time = 10,
   conductances,
-  capacitances
+  capacitances,
+  use_humidification = FALSE,
+  pambient = 101.325,
+  pwater = 6.26
 )
 }
 \arguments{
@@ -22,6 +25,13 @@ sim_anaesthetic_uptake(
 \item{conductances}{\code{numeric(4)}, conductances.}
 
 \item{capacitances}{\code{numeric(4)}, capacitances.}
+
+\item{use_humidification}{\code{logical(1)}, should humification take into account
+(default: \code{FALSE}).}
+
+\item{pambient}{\code{numeric(1)}, ambient pressure in kPa.}
+
+\item{pwater}{\code{numeric(1)}, water pressure in kPa.}
 }
 \value{
 \code{matrix}, with partial pressures for each simulation step.

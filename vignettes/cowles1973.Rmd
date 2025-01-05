@@ -156,14 +156,26 @@ hco <- sim_anaesthetic_uptake(
 )
 ```
 
+## Humidification
+
+```{r sim-hum}
+hum <- sim_anaesthetic_uptake(
+    pinsp = 12, delta_time = 0.1, total_time = 10,
+    conductances = conductances,
+    capacitances = capacitances,
+    use_humidification = TRUE
+)
+```
+
 ## Summary
 
 ```{r sim-tbl, echo = FALSE, results = "asis"}
-tbl <- rbind(normal[100, ], dav[100, ], hco[100, ])
+tbl <- rbind(normal[100, ], dav[100, ], hco[100, ], hum[100, ])
 rownames(tbl) <- c(
     "Normal",
     "Increased Ventilation",
-    "Decreased Cardiac Output"
+    "Decreased Cardiac Output",
+    "Humidification"
 )
 knitr::kable(
     tbl,

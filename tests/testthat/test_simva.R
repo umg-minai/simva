@@ -87,4 +87,17 @@ test_that("sim_anaesthetic_uptake works", {
           lung = 2.24, vrg = 1.59, mus = 0.20, fat = 0.05, cv = 1.30),
         tolerance = 5e-2
     )
+    # Humified, row 4 in Table 4, Cowles 1973
+    expect_equal(
+        sim_anaesthetic_uptake(
+            pinsp = 12, delta_time = 0.1, total_time = 10,
+            conductances = conductances,
+            capacitances = capacitances,
+            use_humidification = TRUE
+        )[100, ],
+        c(time = 10, pinsp = 12,
+          lung = 1.63, vrg = 1.39, mus = 0.26, fat = 0.08, cv = 1.16),
+        tolerance = 5e-2
+    )
+
 })

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">simva</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.3</span>
       </span>
     </div>
 
@@ -75,7 +75,9 @@
 <span>  use_concentration_effect <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  tp_factor <span class="op">=</span> <span class="fu"><a href="stp_factor.html">stp_factor</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  alveolar_minute_ventilation <span class="op">=</span> <span class="va">conductances</span><span class="op">[</span><span class="st">"lung"</span><span class="op">]</span><span class="op">/</span><span class="va">tp_factor</span>,</span>
-<span>  partial_pressures <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>pinsp <span class="op">=</span> <span class="va">pinsp</span>, lung <span class="op">=</span> <span class="fl">0</span>, vrg <span class="op">=</span> <span class="fl">0</span>, mus <span class="op">=</span> <span class="fl">0</span>, fat <span class="op">=</span> <span class="fl">0</span>, cv <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span>  shunt_frac <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  metabolism_frac <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  ppart <span class="op">=</span> <span class="fu"><a href="partial_pressures.html">partial_pressures</a></span><span class="op">(</span>pinsp <span class="op">=</span> <span class="va">pinsp</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -88,7 +90,8 @@
 
 
 <dt id="arg-delta-time">delta_time<a class="anchor" aria-label="anchor" href="#arg-delta-time"></a></dt>
-<dd><p><code>numeric(1)</code>, time difference between each calculation step.</p></dd>
+<dd><p><code>numeric(1)</code>, time difference between each calculation step
+in min.</p></dd>
 
 
 <dt id="arg-total-time">total_time<a class="anchor" aria-label="anchor" href="#arg-total-time"></a></dt>
@@ -130,14 +133,28 @@ take into account (default: <code>FALSE</code>).</p></dd>
 in l/min.</p></dd>
 
 
-<dt id="arg-partial-pressures">partial_pressures<a class="anchor" aria-label="anchor" href="#arg-partial-pressures"></a></dt>
-<dd><p><code>logical(1)</code>, initial partial pressures
-settings to start with.</p></dd>
+<dt id="arg-shunt-frac">shunt_frac<a class="anchor" aria-label="anchor" href="#arg-shunt-frac"></a></dt>
+<dd><p><code>double(1)</code>, fraction of pulmonary shunt.</p></dd>
+
+
+<dt id="arg-metabolism-frac">metabolism_frac<a class="anchor" aria-label="anchor" href="#arg-metabolism-frac"></a></dt>
+<dd><p><code>double(1)</code>, fraction of metabolism of the volatile
+anaesthetic per hour (e.g. <code>metabolism_frac = 0.05</code> for 5 % per hour).</p></dd>
+
+
+<dt id="arg-ppart">ppart<a class="anchor" aria-label="anchor" href="#arg-ppart"></a></dt>
+<dd><p><code>double(6)</code>, initial partial pressures settings to start with.
+Useful to (re)start a simulation at a given anaesthetic state/time point.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     <p><code>matrix</code>, with partial pressures for each simulation step.</p>
+    </div>
+    <div id="note">
+    <h2>Note</h2>
+    <p><code>metabolism_frac</code>: applying the values given in Cowles 1973 the output
+slightly differs (at the second decimal place).</p>
     </div>
     <div id="references">
     <h2>References</h2>
@@ -152,8 +169,7 @@ Computers in Biology and Medicine, 3(4), 385-395.
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">## Test case with diethyl ether as in Cowles 1973, Table 4</span></span></span>
 <span class="r-in"><span><span class="va">blood_flow</span> <span class="op">&lt;-</span> <span class="fu"><a href="cardiac_output.html">cardiac_output</a></span><span class="op">(</span>total <span class="op">=</span> <span class="fl">6.3</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">part_coefs</span> <span class="op">&lt;-</span> <span class="fu"><a href="tissue_coefficients.html">tissue_coefficients</a></span><span class="op">(</span><span class="st">"diethyl-ether"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">part_coefs</span> <span class="op">&lt;-</span> <span class="fu"><a href="partition_coefficients.html">partition_coefficients</a></span><span class="op">(</span><span class="st">"diethyl-ether"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Volumes as in Cowles, Table 3</span></span></span>
 <span class="r-in"><span><span class="va">tissue_volume</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
@@ -198,7 +214,7 @@ Computers in Biology and Medicine, 3(4), 385-395.
 <span class="r-in"><span>    conductances <span class="op">=</span> <span class="va">conductances</span>, capacitances <span class="op">=</span> <span class="va">capacitances</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html" class="external-link">matplot</a></span><span class="op">(</span><span class="va">sim</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span>, <span class="va">sim</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html" class="external-link">matplot</a></span><span class="op">(</span><span class="va">sim</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span>, <span class="va">sim</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_anaesthetic_uptake-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>

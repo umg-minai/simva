@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">simva</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.3</span>
       </span>
     </div>
 
@@ -104,7 +104,7 @@ and Gillies (1973)</span>.</p>
 <p>First we have to define the <em>partition coefficients</em> for the
 given anaesthetic (<em>diethyl ether</em>) for all compartments.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">part_coefs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tissue_coefficients.html">tissue_coefficients</a></span><span class="op">(</span><span class="st">"diethyl-ether"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">part_coefs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partition_coefficients.html">partition_coefficients</a></span><span class="op">(</span><span class="st">"diethyl-ether"</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">lung</th>
@@ -199,14 +199,25 @@ volume of the compartment.</p>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">normal</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
+<colgroup>
+<col width="7%">
+<col width="8%">
+<col width="14%">
+<col width="14%">
+<col width="14%">
+<col width="14%">
+<col width="14%">
+<col width="14%">
+</colgroup>
 <thead><tr class="header">
 <th align="right">time</th>
 <th align="right">pinsp</th>
-<th align="right">lung</th>
-<th align="right">vrg</th>
-<th align="right">mus</th>
-<th align="right">fat</th>
-<th align="right">cv</th>
+<th align="right">palv</th>
+<th align="right">part</th>
+<th align="right">pvrg</th>
+<th align="right">pmus</th>
+<th align="right">pfat</th>
+<th align="right">pcv</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -217,11 +228,13 @@ volume of the compartment.</p>
 <td align="right">0.0000000</td>
 <td align="right">0.0000000</td>
 <td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
 </tr>
 <tr class="even">
 <td align="right">0.2</td>
 <td align="right">12</td>
 <td align="right">0.2644098</td>
+<td align="right">0.1513241</td>
 <td align="right">0.0063239</td>
 <td align="right">0.0004058</td>
 <td align="right">0.0000997</td>
@@ -231,6 +244,7 @@ volume of the compartment.</p>
 <td align="right">0.3</td>
 <td align="right">12</td>
 <td align="right">0.3501489</td>
+<td align="right">0.2644098</td>
 <td align="right">0.0171095</td>
 <td align="right">0.0011139</td>
 <td align="right">0.0002737</td>
@@ -240,6 +254,7 @@ volume of the compartment.</p>
 <td align="right">0.4</td>
 <td align="right">12</td>
 <td align="right">0.4163194</td>
+<td align="right">0.3501489</td>
 <td align="right">0.0310274</td>
 <td align="right">0.0020500</td>
 <td align="right">0.0005041</td>
@@ -249,6 +264,7 @@ volume of the compartment.</p>
 <td align="right">0.5</td>
 <td align="right">12</td>
 <td align="right">0.4684761</td>
+<td align="right">0.4163194</td>
 <td align="right">0.0471289</td>
 <td align="right">0.0031610</td>
 <td align="right">0.0007779</td>
@@ -258,6 +274,7 @@ volume of the compartment.</p>
 <td align="right">0.6</td>
 <td align="right">12</td>
 <td align="right">0.5105859</td>
+<td align="right">0.4684761</td>
 <td align="right">0.0647372</td>
 <td align="right">0.0044090</td>
 <td align="right">0.0010859</td>
@@ -330,21 +347,55 @@ volume of the compartment.</p>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
+<h3 id="pulmonary-shunt">Pulmonary shunt<a class="anchor" aria-label="anchor" href="#pulmonary-shunt"></a>
+</h3>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">psh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_anaesthetic_uptake.html">sim_anaesthetic_uptake</a></span><span class="op">(</span></span>
+<span>    pinsp <span class="op">=</span> <span class="fl">12</span>, delta_time <span class="op">=</span> <span class="fl">0.1</span>, total_time <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>    conductances <span class="op">=</span> <span class="va">conductances</span>,</span>
+<span>    capacitances <span class="op">=</span> <span class="va">capacitances</span>,</span>
+<span>    shunt_frac <span class="op">=</span> <span class="fl">0.1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="metabolism">Metabolism<a class="anchor" aria-label="anchor" href="#metabolism"></a>
+</h3>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">met</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_anaesthetic_uptake.html">sim_anaesthetic_uptake</a></span><span class="op">(</span></span>
+<span>    pinsp <span class="op">=</span> <span class="fl">12</span>, delta_time <span class="op">=</span> <span class="fl">0.01</span>, total_time <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>    conductances <span class="op">=</span> <span class="va">conductances</span>,</span>
+<span>    capacitances <span class="op">=</span> <span class="va">capacitances</span>,</span>
+<span>    metabolism_frac <span class="op">=</span> <span class="fl">0.05</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
 <h3 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
 </h3>
-<table class="table">
+<table style="width:100%;" class="table">
 <caption>Summary of different simulation experiments. Results are
 comparable to Table 4 in <span class="citation">Cowles, Borgstedt, and
 Gillies (1973)</span>.</caption>
+<colgroup>
+<col width="37%">
+<col width="7%">
+<col width="9%">
+<col width="7%">
+<col width="7%">
+<col width="7%">
+<col width="7%">
+<col width="7%">
+<col width="7%">
+</colgroup>
 <thead><tr class="header">
 <th align="left"></th>
 <th align="right">time</th>
 <th align="right">pinsp</th>
-<th align="right">lung</th>
-<th align="right">vrg</th>
-<th align="right">mus</th>
-<th align="right">fat</th>
-<th align="right">cv</th>
+<th align="right">palv</th>
+<th align="right">part</th>
+<th align="right">pvrg</th>
+<th align="right">pmus</th>
+<th align="right">pfat</th>
+<th align="right">pcv</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -352,6 +403,7 @@ Gillies (1973)</span>.</caption>
 <td align="right">10</td>
 <td align="right">12.0</td>
 <td align="right">1.74</td>
+<td align="right">1.73</td>
 <td align="right">1.49</td>
 <td align="right">0.28</td>
 <td align="right">0.07</td>
@@ -362,6 +414,7 @@ Gillies (1973)</span>.</caption>
 <td align="right">10</td>
 <td align="right">12.0</td>
 <td align="right">3.11</td>
+<td align="right">3.10</td>
 <td align="right">2.70</td>
 <td align="right">0.51</td>
 <td align="right">0.14</td>
@@ -372,6 +425,7 @@ Gillies (1973)</span>.</caption>
 <td align="right">10</td>
 <td align="right">12.0</td>
 <td align="right">2.24</td>
+<td align="right">2.23</td>
 <td align="right">1.60</td>
 <td align="right">0.20</td>
 <td align="right">0.05</td>
@@ -382,6 +436,7 @@ Gillies (1973)</span>.</caption>
 <td align="right">10</td>
 <td align="right">11.3</td>
 <td align="right">1.64</td>
+<td align="right">1.63</td>
 <td align="right">1.40</td>
 <td align="right">0.26</td>
 <td align="right">0.07</td>
@@ -392,13 +447,38 @@ Gillies (1973)</span>.</caption>
 <td align="right">10</td>
 <td align="right">12.0</td>
 <td align="right">1.91</td>
+<td align="right">1.90</td>
 <td align="right">1.64</td>
 <td align="right">0.31</td>
 <td align="right">0.08</td>
 <td align="right">1.36</td>
 </tr>
+<tr class="even">
+<td align="left">Pulmonary shunt</td>
+<td align="right">10</td>
+<td align="right">12.0</td>
+<td align="right">1.78</td>
+<td align="right">1.72</td>
+<td align="right">1.48</td>
+<td align="right">0.28</td>
+<td align="right">0.07</td>
+<td align="right">1.23</td>
+</tr>
+<tr class="odd">
+<td align="left">Metabolism</td>
+<td align="right">1</td>
+<td align="right">12.0</td>
+<td align="right">0.61</td>
+<td align="right">0.61</td>
+<td align="right">0.14</td>
+<td align="right">0.01</td>
+<td align="right">0.00</td>
+<td align="right">0.12</td>
+</tr>
 </tbody>
 </table>
+<p>(There is a small difference in the numbers for the metabolism
+scenario.)</p>
 </div>
 </div>
 <div class="section level2">

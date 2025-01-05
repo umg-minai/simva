@@ -7,6 +7,7 @@
 #' @param std_pressure `numeric`, standard_pressure in atm, default: 1 atm
 #' (== 101.325 kPa)
 #' @return `numeric`, correction factor for temperature/pressure condition
+#' @export
 #' @examples
 #' # BTPS (body temperature, pressure saturated (ignored))
 #' stp_factor()
@@ -27,6 +28,7 @@ stp_factor <- function(std_temperature = 273.2, tissue_temperature = 310.2,
 #' partition coefficient
 #' @param tp_factor `numeric`, temperature/pressure factor
 #' @return `numeric`, conductance of the tissue in l/(min*atm)
+#' @export
 #'
 #' @details
 #' From Cowles et al.:
@@ -37,7 +39,7 @@ stp_factor <- function(std_temperature = 273.2, tissue_temperature = 310.2,
 #' the conductance is the rate of alveolar ventilation
 #' multiplied by the factor, T0/P0Ti.
 #' The gas:gas partition coefficient is equal to 1.0, by definition."
-#
+#'
 #' @references
 #' Eqn. 6 in
 #' Cowles, A. L., Borgstedt, H. H., & Gillies, A. J. (1973).
@@ -59,6 +61,7 @@ conductance <- function(flow, partition_coefficient, tp_factor = stp_factor()) {
 #' @param blood_coefficient `numeric`, blood:gas partition coefficient
 #' @param tp_factor `numeric`, temperature/pressure factor
 #' @return `numeric`, conductance of the tissue in l/(min*atm)
+#' @export
 #'
 #' @details
 #' From Cowles et al.:
@@ -87,12 +90,14 @@ capacitance <- function(tissue_volume, tissue_coefficient,
 #' Capacitance is defined as ability of a tissue to hold anaesthetic agents
 #' ant any given partial pressure.
 #'
+#' @param air_volume `numeric`, air volume in l.
 #' @param tissue_volume `numeric`, tissue volume in l.
 #' @param tissue_coefficient `numeric`, tissue:gas partition coefficient
 #' @param blood_volume `numeric`, tissue volume in l.
 #' @param blood_coefficient `numeric`, blood:gas partition coefficient
 #' @param tp_factor `numeric`, temperature/pressure factor
 #' @return `numeric`, conductance of the tissue in l/(min*atm)
+#' @export
 #'
 #' @details
 #' From Cowles et al.:
@@ -123,6 +128,7 @@ lung_capacitance <- function(air_volume,
 #' *lung*, *vrg* (vessel rich group, visceral: brain, heart, kidney, ...),
 #' *mus* (muscle, lean tissue: muscle, skin, subcutaneous tissue, ...),
 #' and *fat* (fat, fatty tissue: yellow marrow, fat) for the given anaesthetic.
+#' @export
 #'
 #' @references
 #' Table 2 in
@@ -132,7 +138,7 @@ lung_capacitance <- function(air_volume,
 #' \doi{10.1016/0010-4825(73)90004-8}
 #'
 #' @examples
-#' tissue_coefficients("nitrous oxide")
+#' tissue_coefficients("nitrous-oxide")
 tissue_coefficients <- function(anaesthetic = c(
                                     "nitrous-oxide",
                                     "diethyl-ether"
@@ -162,6 +168,7 @@ tissue_coefficients <- function(anaesthetic = c(
 #' *lung*, *vrg* (vessel rich group, visceral: brain, heart, kidney, ...),
 #' *mus* (muscle, lean tissue: muscle, skin, subcutaneous tissue, ...),
 #' and *fat* (fat, fatty tissue: yellow marrow, fat) for the given anaesthetic.
+#' @export
 #'
 #' @references
 #' Table 3 in
@@ -184,20 +191,6 @@ cardiac_output <- function(total = 6.3,
     )
 }
 
-#' Volumes
-#'
-#' @references
-#' Table 3 in
-#' Cowles, A. L., Borgstedt, H. H., & Gillies, A. J. (1973).
-#' A simplified digital method for predicting anesthetic uptake and distribution.
-#' Computers in Biology and Medicine, 3(4), 385-395.
-#' \doi{10.1016/0010-4825(73)90004-8}
-tissue_volume <- c(
-    lung_air = 2.68, lung_tissue = 1.0,
-    vrg = 8.83, mus = 36.25, fat = 11.5
-)
-blood_volume <- c(lung = 1.4, vrg = 3.2, mus = 0.63, fat = 0.18)
-
 #' Simulate anaesthetic uptake
 #'
 #' @param pinsp `numeric(1)`, inspiratory partial pressure of the anaesthetic.
@@ -206,6 +199,7 @@ blood_volume <- c(lung = 1.4, vrg = 3.2, mus = 0.63, fat = 0.18)
 #' @param conductances `numeric(4)`, conductances.
 #' @param capacitances `numeric(4)`, capacitances.
 #' @return `matrix`, with partial pressures for each simulation step.
+#' @export
 #'
 #' @references
 #' Figure 1 in
@@ -213,6 +207,57 @@ blood_volume <- c(lung = 1.4, vrg = 3.2, mus = 0.63, fat = 0.18)
 #' A simplified digital method for predicting anesthetic uptake and distribution.
 #' Computers in Biology and Medicine, 3(4), 385-395.
 #' \doi{10.1016/0010-4825(73)90004-8}
+#'
+#' @examples
+#' ## Test case with diethyl ether as in Cowles 1973, Table 4
+#' blood_flow <- cardiac_output(total = 6.3)
+#' part_coefs <- tissue_coefficients("diethyl-ether")
+#'
+#'
+#' # Volumes as in Cowles, Table 3
+#' tissue_volume <- c(
+#'     lung_air = 2.68, lung_tissue = 1.0,
+#'     vrg = 8.83, mus = 36.25, fat = 11.5
+#' )
+#' blood_volume <- c(lung = 1.4, vrg = 3.2, mus = 0.63, fat = 0.18)
+#'
+#' conductances <- c(
+#'     lung = conductance(
+#'         flow = 4.0,                     # alveolar minute ventilation
+#'         partition_coefficient = 1.0     # gas:gas partition coefficient
+#'     ),
+#'     vrg = conductance(blood_flow["vrg"], part_coefs["lung"]),
+#'     mus = conductance(blood_flow["mus"], part_coefs["lung"]),
+#'     fat = conductance(blood_flow["fat"], part_coefs["lung"])
+#' )
+#' capacitances <- c(
+#'     lung = lung_capacitance(
+#'         tissue_volume["lung_air"],
+#'         ## blood volume and tissue:gas == blood:gas in that case
+#'         tissue_volume["lung_tissue"], tissue_coefficient = part_coefs["lung"],
+#'         ## blood volume and blood:gas part_coefs
+#'         blood_volume["lung"], part_coefs["lung"]
+#'     ),
+#'     vrg = capacitance(
+#'         tissue_volume["vrg"], part_coefs["vrg"],
+#'         blood_volume["vrg"], part_coefs["lung"]
+#'     ),
+#'     mus = capacitance(
+#'         tissue_volume["mus"], part_coefs["mus"],
+#'         blood_volume["mus"], part_coefs["lung"]
+#'     ),
+#'     fat = capacitance(
+#'         tissue_volume["fat"], part_coefs["fat"],
+#'         blood_volume["fat"], part_coefs["lung"]
+#'     )
+#' )
+#'
+#' sim <- sim_anaesthetic_uptake(
+#'     pinsp = 12, delta_time = 10/60, total_time = 10,
+#'     conductances = conductances, capacitances = capacitances
+#' )
+#'
+#' matplot(sim[, 1], sim[, -1])
 sim_anaesthetic_uptake <- function(pinsp,
                                    delta_time = 0.1, total_time = 10,
                                    conductances, capacitances) {
@@ -224,8 +269,17 @@ sim_anaesthetic_uptake <- function(pinsp,
         dimnames = list(c(), c("time", names(partial_pressures), "cv"))
     )
 
+    # humified
+    # pamb <- 760 # mmHg
+    # dph2o <- 47 # mmHg
+    # pinsp <- pinsp * (pamb/ (pamb + dph2o))
+
     for (i in seq_len(n)) {
         dvdtpt <- (pinsp - partial_pressures["lung"]) * conductances["lung"]
+
+        # if concentration effect
+        # AMV = 4
+        # conductances["lung"] <- AMV * stp_factor() + dvdtpt / 100
         dvdt <- c(
             dvdt1 = 0,
             dvdt2 = (partial_pressures["lung"] - partial_pressures["vrg"]) *
@@ -246,60 +300,3 @@ sim_anaesthetic_uptake <- function(pinsp,
     }
     results
 }
-
-
-
-#' Test case with diethyl ether as in Cowles 1973, Table 4
-#' set total to 6.3 * 0.5 to simulate reduced cardiac output (row 3 in Table 4)
-blood_flow <- cardiac_output(total = 6.3)
-part_coefs <- tissue_coefficients("diethyl-ether")
-
-#' Conductances
-conductances <- c(
-    ## do we have to use the alveolar ventilation here? 4.0 l/min?
-    ## and a gas:gas partition coefficient of 1.0?
-    ## from Cowles 1973:
-    ## In the case of blood perfusing a tissue, the conductance is equal to
-    ## the rate of blood flow multiplied by the blood:gas partition coefficient
-    ## and the factor, T0/P0Ti. In the case of the alveolar gas ventilating
-    ## the lungs, the conductance is the rate of alveolar ventilation
-    ## multiplied by the factor, T0/P0Ti.
-    ## The gas:gas partition coefficient is equal to 1.0, by definition.
-    lung = conductance(
-        flow = 4.0,                     # alveolar minute ventilation
-        partition_coefficient = 1.0     # gas:gas partition coefficient
-    ),
-    vrg = conductance(blood_flow["vrg"], part_coefs["lung"]),
-    mus = conductance(blood_flow["mus"], part_coefs["lung"]),
-    fat = conductance(blood_flow["fat"], part_coefs["lung"])
-)
-
-#' Capacitances
-capacitances <- c(
-    lung = lung_capacitance(
-        tissue_volume["lung_air"],
-        ## blood volume and tissue:gas == blood:gas in that case
-        tissue_volume["lung_tissue"], tissue_coefficient = part_coefs["lung"],
-        ## blood volume and blood:gas part_coefs
-        blood_volume["lung"], part_coefs["lung"]
-    ),
-    vrg = capacitance(
-        tissue_volume["vrg"], part_coefs["vrg"],
-        blood_volume["vrg"], part_coefs["lung"]
-    ),
-    mus = capacitance(
-        tissue_volume["mus"], part_coefs["mus"],
-        blood_volume["mus"], part_coefs["lung"]
-    ),
-    fat = capacitance(
-        tissue_volume["fat"], part_coefs["fat"],
-        blood_volume["fat"], part_coefs["lung"]
-    )
-)
-
-sim <- sim_anaesthetic_uptake(
-    pinsp = 12, delta_time = 0.1, total_time = 10,
-    conductances = conductances, capacitances = capacitances
-)
-
-matplot(sim[, 1], sim[, -1])

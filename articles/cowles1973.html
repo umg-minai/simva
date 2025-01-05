@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">simva</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.2</span>
       </span>
     </div>
 
@@ -201,6 +201,7 @@ volume of the compartment.</p>
 <table class="table">
 <thead><tr class="header">
 <th align="right">time</th>
+<th align="right">pinsp</th>
 <th align="right">lung</th>
 <th align="right">vrg</th>
 <th align="right">mus</th>
@@ -210,6 +211,7 @@ volume of the compartment.</p>
 <tbody>
 <tr class="odd">
 <td align="right">0.1</td>
+<td align="right">12</td>
 <td align="right">0.1513241</td>
 <td align="right">0.0000000</td>
 <td align="right">0.0000000</td>
@@ -218,6 +220,7 @@ volume of the compartment.</p>
 </tr>
 <tr class="even">
 <td align="right">0.2</td>
+<td align="right">12</td>
 <td align="right">0.2644098</td>
 <td align="right">0.0063239</td>
 <td align="right">0.0004058</td>
@@ -226,6 +229,7 @@ volume of the compartment.</p>
 </tr>
 <tr class="odd">
 <td align="right">0.3</td>
+<td align="right">12</td>
 <td align="right">0.3501489</td>
 <td align="right">0.0171095</td>
 <td align="right">0.0011139</td>
@@ -234,6 +238,7 @@ volume of the compartment.</p>
 </tr>
 <tr class="even">
 <td align="right">0.4</td>
+<td align="right">12</td>
 <td align="right">0.4163194</td>
 <td align="right">0.0310274</td>
 <td align="right">0.0020500</td>
@@ -242,6 +247,7 @@ volume of the compartment.</p>
 </tr>
 <tr class="odd">
 <td align="right">0.5</td>
+<td align="right">12</td>
 <td align="right">0.4684761</td>
 <td align="right">0.0471289</td>
 <td align="right">0.0031610</td>
@@ -250,6 +256,7 @@ volume of the compartment.</p>
 </tr>
 <tr class="even">
 <td align="right">0.6</td>
+<td align="right">12</td>
 <td align="right">0.5105859</td>
 <td align="right">0.0647372</td>
 <td align="right">0.0044090</td>
@@ -301,6 +308,28 @@ volume of the compartment.</p>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
+<h3 id="humidification">Humidification<a class="anchor" aria-label="anchor" href="#humidification"></a>
+</h3>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">hum</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_anaesthetic_uptake.html">sim_anaesthetic_uptake</a></span><span class="op">(</span></span>
+<span>    pinsp <span class="op">=</span> <span class="fl">12</span>, delta_time <span class="op">=</span> <span class="fl">0.1</span>, total_time <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>    conductances <span class="op">=</span> <span class="va">conductances</span>,</span>
+<span>    capacitances <span class="op">=</span> <span class="va">capacitances</span>,</span>
+<span>    use_humidification <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="concentration-effect">Concentration effect<a class="anchor" aria-label="anchor" href="#concentration-effect"></a>
+</h3>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_anaesthetic_uptake.html">sim_anaesthetic_uptake</a></span><span class="op">(</span></span>
+<span>    pinsp <span class="op">=</span> <span class="fl">12</span>, delta_time <span class="op">=</span> <span class="fl">0.1</span>, total_time <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>    conductances <span class="op">=</span> <span class="va">conductances</span>,</span>
+<span>    capacitances <span class="op">=</span> <span class="va">capacitances</span>,</span>
+<span>    use_concentration_effect <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
 <h3 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
 </h3>
 <table class="table">
@@ -310,6 +339,7 @@ Gillies (1973)</span>.</caption>
 <thead><tr class="header">
 <th align="left"></th>
 <th align="right">time</th>
+<th align="right">pinsp</th>
 <th align="right">lung</th>
 <th align="right">vrg</th>
 <th align="right">mus</th>
@@ -320,6 +350,7 @@ Gillies (1973)</span>.</caption>
 <tr class="odd">
 <td align="left">Normal</td>
 <td align="right">10</td>
+<td align="right">12.0</td>
 <td align="right">1.74</td>
 <td align="right">1.49</td>
 <td align="right">0.28</td>
@@ -327,8 +358,9 @@ Gillies (1973)</span>.</caption>
 <td align="right">1.23</td>
 </tr>
 <tr class="even">
-<td align="left">Increased Ventilation</td>
+<td align="left">Increased ventilation</td>
 <td align="right">10</td>
+<td align="right">12.0</td>
 <td align="right">3.11</td>
 <td align="right">2.70</td>
 <td align="right">0.51</td>
@@ -336,13 +368,34 @@ Gillies (1973)</span>.</caption>
 <td align="right">2.24</td>
 </tr>
 <tr class="odd">
-<td align="left">Decreased Cardiac Output</td>
+<td align="left">Decreased cardiac output</td>
 <td align="right">10</td>
+<td align="right">12.0</td>
 <td align="right">2.24</td>
 <td align="right">1.60</td>
 <td align="right">0.20</td>
 <td align="right">0.05</td>
 <td align="right">1.31</td>
+</tr>
+<tr class="even">
+<td align="left">Humidification</td>
+<td align="right">10</td>
+<td align="right">11.3</td>
+<td align="right">1.64</td>
+<td align="right">1.40</td>
+<td align="right">0.26</td>
+<td align="right">0.07</td>
+<td align="right">1.16</td>
+</tr>
+<tr class="odd">
+<td align="left">Concentration effect</td>
+<td align="right">10</td>
+<td align="right">12.0</td>
+<td align="right">1.91</td>
+<td align="right">1.64</td>
+<td align="right">0.31</td>
+<td align="right">0.08</td>
+<td align="right">1.36</td>
 </tr>
 </tbody>
 </table>

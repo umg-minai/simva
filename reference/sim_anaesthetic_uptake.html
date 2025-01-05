@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">simva</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.2</span>
       </span>
     </div>
 
@@ -68,7 +68,14 @@
 <span>  delta_time <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  total_time <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  <span class="va">conductances</span>,</span>
-<span>  <span class="va">capacitances</span></span>
+<span>  <span class="va">capacitances</span>,</span>
+<span>  use_humidification <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  pambient <span class="op">=</span> <span class="fl">101.325</span>,</span>
+<span>  pwater <span class="op">=</span> <span class="fl">6.26</span>,</span>
+<span>  use_concentration_effect <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  tp_factor <span class="op">=</span> <span class="fu"><a href="stp_factor.html">stp_factor</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  alveolar_minute_ventilation <span class="op">=</span> <span class="va">conductances</span><span class="op">[</span><span class="st">"lung"</span><span class="op">]</span><span class="op">/</span><span class="va">tp_factor</span>,</span>
+<span>  partial_pressures <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>pinsp <span class="op">=</span> <span class="va">pinsp</span>, lung <span class="op">=</span> <span class="fl">0</span>, vrg <span class="op">=</span> <span class="fl">0</span>, mus <span class="op">=</span> <span class="fl">0</span>, fat <span class="op">=</span> <span class="fl">0</span>, cv <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -94,6 +101,38 @@
 
 <dt id="arg-capacitances">capacitances<a class="anchor" aria-label="anchor" href="#arg-capacitances"></a></dt>
 <dd><p><code>numeric(4)</code>, capacitances.</p></dd>
+
+
+<dt id="arg-use-humidification">use_humidification<a class="anchor" aria-label="anchor" href="#arg-use-humidification"></a></dt>
+<dd><p><code>logical(1)</code>, should humification take into account
+(default: <code>FALSE</code>).</p></dd>
+
+
+<dt id="arg-pambient">pambient<a class="anchor" aria-label="anchor" href="#arg-pambient"></a></dt>
+<dd><p><code>numeric(1)</code>, ambient pressure in kPa.</p></dd>
+
+
+<dt id="arg-pwater">pwater<a class="anchor" aria-label="anchor" href="#arg-pwater"></a></dt>
+<dd><p><code>numeric(1)</code>, water pressure in kPa.</p></dd>
+
+
+<dt id="arg-use-concentration-effect">use_concentration_effect<a class="anchor" aria-label="anchor" href="#arg-use-concentration-effect"></a></dt>
+<dd><p><code>logical(1)</code>, should concentration effect
+take into account (default: <code>FALSE</code>).</p></dd>
+
+
+<dt id="arg-tp-factor">tp_factor<a class="anchor" aria-label="anchor" href="#arg-tp-factor"></a></dt>
+<dd><p><code>numeric</code>, temperature/pressure factor.</p></dd>
+
+
+<dt id="arg-alveolar-minute-ventilation">alveolar_minute_ventilation<a class="anchor" aria-label="anchor" href="#arg-alveolar-minute-ventilation"></a></dt>
+<dd><p><code>numeric(1)</code>, alveolar minute ventilation
+in l/min.</p></dd>
+
+
+<dt id="arg-partial-pressures">partial_pressures<a class="anchor" aria-label="anchor" href="#arg-partial-pressures"></a></dt>
+<dd><p><code>logical(1)</code>, initial partial pressures
+settings to start with.</p></dd>
 
 </dl></div>
     <div id="value">

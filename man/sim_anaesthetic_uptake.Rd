@@ -17,13 +17,15 @@ sim_anaesthetic_uptake(
   tp_factor = stp_factor(),
   alveolar_minute_ventilation = conductances["lung"]/tp_factor,
   shunt_frac = 0,
+  metabolism_frac = 0,
   ppart = partial_pressures(pinsp = pinsp)
 )
 }
 \arguments{
 \item{pinsp}{\code{numeric(1)}, inspiratory partial pressure of the anaesthetic.}
 
-\item{delta_time}{\code{numeric(1)}, time difference between each calculation step.}
+\item{delta_time}{\code{numeric(1)}, time difference between each calculation step
+in min.}
 
 \item{total_time}{\code{numeric(1)}, total time to simulate.}
 
@@ -48,6 +50,9 @@ in l/min.}
 
 \item{shunt_frac}{\code{double(1)}, fraction of pulmonary shunt.}
 
+\item{metabolism_frac}{\code{double(1)}, fraction of metabolism of the volatile
+anaesthetic per hour (e.g. \code{metabolism_frac = 0.05} for 5 \% per hour).}
+
 \item{ppart}{\code{double(6)}, initial partial pressures settings to start with.
 Useful to (re)start a simulation at a given anaesthetic state/time point.}
 }
@@ -56,6 +61,10 @@ Useful to (re)start a simulation at a given anaesthetic state/time point.}
 }
 \description{
 Simulate anaesthetic uptake
+}
+\note{
+\code{metabolism_frac}: applying the values given in Cowles 1973 the output
+slightly differs (at the second decimal place).
 }
 \examples{
 ## Test case with diethyl ether as in Cowles 1973, Table 4
@@ -105,7 +114,7 @@ sim <- sim_anaesthetic_uptake(
     conductances = conductances, capacitances = capacitances
 )
 
-matplot(sim[, 1], sim[, -1])
+matplot(sim[, 1], sim[, -1], type = "l")
 }
 \references{
 Figure 1 in

@@ -1,6 +1,6 @@
 Package: simva
 Title: Simulate Volatile Anaesthetic Uptake and Distribution
-Version: 0.0.2
+Version: 0.0.3
 Authors@R:
     person(
         given = "Sebastian", family = "Gibb",

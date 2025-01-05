@@ -1,7 +1,8 @@
 #' Simulate anaesthetic uptake
 #'
 #' @param pinsp `numeric(1)`, inspiratory partial pressure of the anaesthetic.
-#' @param delta_time `numeric(1)`, time difference between each calculation step.
+#' @param delta_time `numeric(1)`, time difference between each calculation step
+#' in min.
 #' @param total_time `numeric(1)`, total time to simulate.
 #' @param conductances `numeric(4)`, conductances.
 #' @param capacitances `numeric(4)`, capacitances.
@@ -15,10 +16,16 @@
 #' @param alveolar_minute_ventilation `numeric(1)`, alveolar minute ventilation
 #' in l/min.
 #' @param shunt_frac `double(1)`, fraction of pulmonary shunt.
+#' @param metabolism_frac `double(1)`, fraction of metabolism of the volatile
+#' anaesthetic per hour (e.g. `metabolism_frac = 0.05` for 5 % per hour).
 #' @param ppart `double(6)`, initial partial pressures settings to start with.
 #' Useful to (re)start a simulation at a given anaesthetic state/time point.
 #' @return `matrix`, with partial pressures for each simulation step.
 #' @export
+#'
+#' @note
+#' `metabolism_frac`: applying the values given in Cowles 1973 the output
+#' slightly differs (at the second decimal place).
 #'
 #' @references
 #' Figure 1 in
@@ -75,7 +82,7 @@
 #'     conductances = conductances, capacitances = capacitances
 #' )
 #'
-#' matplot(sim[, 1], sim[, -1])
+#' matplot(sim[, 1], sim[, -1], type = "l")
 sim_anaesthetic_uptake <- function(pinsp,
                                    delta_time = 0.1, total_time = 10,
                                    conductances, capacitances,
@@ -87,6 +94,7 @@ sim_anaesthetic_uptake <- function(pinsp,
                                    alveolar_minute_ventilation =
                                        conductances["lung"] / tp_factor,
                                    shunt_frac = 0,
+                                   metabolism_frac = 0,
                                    ppart =
                                        partial_pressures(pinsp = pinsp)
                                    ) {
@@ -114,6 +122,13 @@ sim_anaesthetic_uptake <- function(pinsp,
     if (shunt_frac < 0 || shunt_frac > 1)
         stop("'shunt_frac' has to be between 0 and 1.")
 
+    if (metabolism_frac < 0 || metabolism_frac > 1)
+        stop("'metabolism_frac' has to be between 0 and 1.")
+
+    ## determine metabolism_frac per time interval / metabolism_frac is give per
+    ## hour and delta_time is in min
+    metabolism_frac <- metabolism_frac / (60 / delta_time)
+
     for (i in seq_len(n)) {
         dvdtpt <- (ppart["pinsp"] - ppart["palv"]) *
             conductances["lung"]
@@ -139,6 +154,11 @@ sim_anaesthetic_uptake <- function(pinsp,
         ppart[c("palv", "pvrg", "pmus", "pfat")] <-
             ppart[c("palv", "pvrg", "pmus", "pfat")] +
             dvdt * delta_time / capacitances
+
+        ppart[c("pvrg", "pmus", "pfat")] <-
+            ppart[c("pvrg", "pmus", "pfat")] *
+            (1 - metabolism_frac)
+
         ppart["pcv"] <- sum(
             ppart[c("pvrg", "pmus", "pfat")] *
                 conductances[c("vrg", "mus", "fat")]

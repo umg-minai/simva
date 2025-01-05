@@ -11,6 +11,13 @@ test_that("sim_anaesthetic_uptake works", {
     expect_error(sim_anaesthetic_uptake(pinsp = 12, shunt_frac = 3), "0 and 1")
     expect_error(sim_anaesthetic_uptake(pinsp = 12, shunt_frac = -3), "0 and 1")
 
+    expect_error(
+        sim_anaesthetic_uptake(pinsp = 12, metabolism_frac = 3), "0 and 1"
+    )
+    expect_error(
+        sim_anaesthetic_uptake(pinsp = 12, metabolism_frac = -3), "0 and 1"
+    )
+
     # Test case with diethyl ether as in Cowles 1973, Table 4
     blood_flow <- cardiac_output()
     part_coefs <- partition_coefficients("diethyl-ether")
@@ -131,6 +138,18 @@ test_that("sim_anaesthetic_uptake works", {
             shunt_frac = 0.1
         )[100, ],
         c(time = 10, pinsp = 12, palv = 1.78, part = 1.72, 
+          pvrg = 1.47, pmus = 0.28, pfat = 0.08, pcv = 1.22),
+        tolerance = 5e-2
+    )
+    # Metabolism, row 8 in Table 4, Cowles 1973
+    expect_equal(
+        sim_anaesthetic_uptake(
+            pinsp = 12, delta_time = 0.1, total_time = 10,
+            conductances = conductances,
+            capacitances = capacitances,
+            metabolism_frac = 0.05
+        )[100, ],
+        c(time = 10, pinsp = 12, palv = 1.72, part = 1.72, 
           pvrg = 1.47, pmus = 0.28, pfat = 0.08, pcv = 1.22),
         tolerance = 5e-2
     )

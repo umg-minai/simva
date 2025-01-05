@@ -189,11 +189,23 @@ psh <- sim_anaesthetic_uptake(
 )
 ```
 
+## Metabolism
+
+```{r sim-met}
+met <- sim_anaesthetic_uptake(
+    pinsp = 12, delta_time = 0.01, total_time = 10,
+    conductances = conductances,
+    capacitances = capacitances,
+    metabolism_frac = 0.05
+)
+```
+
 ## Summary
 
 ```{r sim-tbl, echo = FALSE, results = "asis"}
 tbl <- rbind(
-    normal[100, ], dav[100, ], hco[100, ], hum[100, ], con[100, ], psh[100, ]
+    normal[100, ], dav[100, ], hco[100, ],
+    hum[100, ], con[100, ], psh[100, ], met[100,]
 )
 rownames(tbl) <- c(
     "Normal",
@@ -201,7 +213,8 @@ rownames(tbl) <- c(
     "Decreased cardiac output",
     "Humidification",
     "Concentration effect",
-    "Pulmonary shunt"
+    "Pulmonary shunt",
+    "Metabolism"
 )
 knitr::kable(
     tbl,
@@ -212,5 +225,7 @@ knitr::kable(
     )
 )
 ```
+
+(There is a small difference in the numbers for the metabolism scenario.)
 
 # References

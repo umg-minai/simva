@@ -25,7 +25,8 @@ tissue_coefficients <- function(anaesthetic = c(
     switch(
         match.arg(anaesthetic),
         "nitrous-oxide" = c(lung = 0.463, vrg = 0.463, mus = 0.463, fat = 1.03),
-        "diethyl-ether" = c(lung = 12.1, vrg = 12.1, mus = 12.1, fat = 44.1)
+        "diethyl-ether" = c(lung = 12.1, vrg = 12.1, mus = 12.1, fat = 44.1),
+        "halothane" = c(lung = 2.3, vrg = 6, mus = 8, fat = 138)
     )
 }
 
